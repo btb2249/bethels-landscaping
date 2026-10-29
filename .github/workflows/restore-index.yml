@@ -1,0 +1,23 @@
+name: Restore index.html
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore full index.html from original upload
+        run: |
+          git config user.name "btb2249"
+          git config user.email "btb2249@users.noreply.github.com"
+          ORIG=$(git log --all --format=%H --diff-filter=A -- bethel-s-landing-page-instant-estimates.html | head -n 1)
+          echo "Original commit: $ORIG"
+          git show "$ORIG:bethel-s-landing-page-instant-estimates.html" > index.html
+          ls -lh index.html
+          git add index.html
+          git commit -m "Restore full index.html" || echo "nothing to commit"
+          git push
